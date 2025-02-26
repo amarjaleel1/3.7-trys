@@ -1,0 +1,63 @@
+CPU Pipeline Simulator
+=====================
+Loaded test program
+
+Cycle 1
+Fetch: ADD R1, R2, R3
+
+Cycle 2
+Decode: ADD R1, R2, R3
+Fetch: SUB R4, R1, R5
+
+Cycle 3
+Execute: ADD R1, R2, R3
+Decode: SUB R4, R1, R5
+Fetch: LW R6, 0(R4)
+
+Cycle 4
+Memory: ADD R1, R2, R3
+Execute: SUB R4, R1, R5
+Decode: LW R6, 0(R4)
+Fetch: JUMP 8
+
+Cycle 5
+Writeback: ADD R1, R2, R3 (Result: 5 to R1)
+Memory: SUB R4, R1, R5
+Execute: LW R6, 0(R4)
+Decode: JUMP 8
+Fetch: ADD R7, R7, R1
+
+Cycle 6
+Memory: SUB R4, R1, R5
+Memory: LW R6, 0(R4) (Read 0 from address 0)
+Execute: JUMP 8
+Control hazard detected - flushing pipeline
+Jump instruction: setting PC to 8
+Pipeline stalled due to hazard
+
+Cycle 7
+Writeback: SUB R4, R1, R5 (Result: -5 to R4)
+Writeback: LW R6, 0(R4) (No writeback)
+
+Cycle 8
+Fetch: JUMP 8
+
+Cycle 9
+Decode: JUMP 8
+
+Cycle 10
+Execute: JUMP 8
+Control hazard detected - flushing pipeline
+Jump instruction: setting PC to 8
+Pipeline stalled due to hazard
+
+Pipeline Statistics
+===================
+Total cycles: 10
+Instructions executed: 5
+Stalls: 2
+CPI (Cycles per Instruction): 2.00
+Hazards:
+  data: 0
+  control: 2
+  structural: 0

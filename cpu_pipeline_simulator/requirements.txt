@@ -1,0 +1,2 @@
+# No external dependencies required
+# This is a placeholder file for package management

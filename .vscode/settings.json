@@ -1,0 +1,5 @@
+{
+    "github.copilot.chat.scopeSelection": true,
+    "github.copilot.chat.edits.codesearch.enabled": true,
+    "github.copilot.chat.editor.temporalContext.enabled": true
+}
