@@ -181,6 +181,8 @@ def visualize_pipeline(program_file=None):
     
     # Run simulation
     if program_file:
+        if not os.path.isfile(program_file):
+            raise FileNotFoundError(f"Program file '{program_file}' not found.")
         pipeline.load_program(program_file)
     else:
         pipeline.load_test_program()
@@ -195,6 +197,8 @@ if __name__ == "__main__":
     # Run with command line arguments
     if len(sys.argv) > 1:
         program_file = sys.argv[1]
+        if not os.path.isfile(program_file):
+            raise FileNotFoundError(f"Program file '{program_file}' not found.")
         visualize_pipeline(program_file)
     else:
         visualize_pipeline()
