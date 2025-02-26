@@ -2,6 +2,8 @@ import os
 import sys
 import time
 from colorama import init, Fore, Back, Style
+import matplotlib.pyplot as plt
+from fpdf import FPDF
 
 # Initialize colorama
 init()
@@ -11,7 +13,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.append(current_dir)
 
-from simulator.pipeline import Pipeline
+from cpu_pipeline_simulator.simulator.pipeline import Pipeline
 
 class PipelineVisualizer:
     """Visualizes the state of the CPU pipeline"""
@@ -33,6 +35,8 @@ class PipelineVisualizer:
             }
         state['cycle'] = self.pipeline.cycles
         state['pc'] = self.pipeline.pc
+        state['registers'] = self.pipeline.processor.registers.copy()
+        state['memory'] = self.pipeline.processor.memory.copy()
         self.history.append(state)
     
     def print_horizontal_view(self):
@@ -57,6 +61,20 @@ class PipelineVisualizer:
         print(f"Program Counter: {self.pipeline.pc}")
         print(f"Stalls: {self.pipeline.stalls}")
         print(f"Hazards: Data={self.pipeline.hazards['data']}, Control={self.pipeline.hazards['control']}, Structural={self.pipeline.hazards['structural']}")
+        print("=" * 80)
+        
+        # Print register values
+        print("Register Values:")
+        for reg, value in self.pipeline.processor.registers.items():
+            print(f"{reg}: {value}")
+        
+        print("-" * 80)
+        
+        # Print memory access patterns
+        print("Memory Access Patterns:")
+        for addr, value in self.pipeline.processor.memory.items():
+            print(f"Address {addr}: {value}")
+        
         print("=" * 80)
         
         # Slow down visualization for readability
@@ -141,11 +159,62 @@ class PipelineVisualizer:
             f.write(html_content)
         
         print(f"Timeline saved to {filename}")
+    
+    def save_visualization(self, format='png', filename='pipeline_visualization'):
+        """Save the visualization in different formats (PNG, PDF)"""
+        if format == 'png':
+            self._save_as_png(filename)
+        elif format == 'pdf':
+            self._save_as_pdf(filename)
+        else:
+            raise ValueError(f"Unsupported format: {format}")
+    
+    def _save_as_png(self, filename):
+        """Save the visualization as a PNG image"""
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.set_title('CPU Pipeline Visualization')
+        ax.set_xlabel('Cycle')
+        ax.set_ylabel('Stage')
+        
+        stages = ['fetch', 'decode', 'execute', 'memory', 'writeback']
+        for i, state in enumerate(self.history):
+            for j, stage_name in enumerate(stages):
+                stage_state = state[stage_name]
+                color = 'red' if stage_state['stall'] else 'yellow' if stage_state['busy'] else 'green'
+                ax.broken_barh([(i, 1)], (j * 10, 9), facecolors=color)
+        
+        ax.set_yticks([i * 10 + 4.5 for i in range(len(stages))])
+        ax.set_yticklabels([stage.upper() for stage in stages])
+        ax.grid(True)
+        
+        plt.savefig(f"{filename}.png")
+        plt.close()
+        print(f"Visualization saved as {filename}.png")
+    
+    def _save_as_pdf(self, filename):
+        """Save the visualization as a PDF document"""
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        
+        pdf.cell(200, 10, txt="CPU Pipeline Visualization", ln=True, align='C')
+        
+        stages = ['fetch', 'decode', 'execute', 'memory', 'writeback']
+        for i, state in enumerate(self.history):
+            pdf.cell(200, 10, txt=f"Cycle {state['cycle']}", ln=True, align='L')
+            for stage_name in stages:
+                stage_state = state[stage_name]
+                status = "STALLED" if stage_state['stall'] else "BUSY" if stage_state['busy'] else "IDLE"
+                instr = stage_state['instruction'] if stage_state['instruction'] else "NOP"
+                pdf.cell(200, 10, txt=f"{stage_name.upper()}: {status} - {instr}", ln=True, align='L')
+        
+        pdf.output(f"{filename}.pdf")
+        print(f"Visualization saved as {filename}.pdf")
 
 def visualize_pipeline(program_file=None):
     """Run the pipeline with visualization"""
-    from simulator.processor import Processor
-    from simulator.instruction_set import InstructionSet
+    from cpu_pipeline_simulator.simulator.processor import Processor
+    from cpu_pipeline_simulator.simulator.instruction_set import InstructionSet
     
     # Initialize components
     instruction_set = InstructionSet()
