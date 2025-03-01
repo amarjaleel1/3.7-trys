@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning Platform</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Prism.js for code highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-tomorrow.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/welcome.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/tutorial.css">
+    <link rel="stylesheet" href="css/analytics.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            <h1>AI Learning Platform</h1>
+        </div>
+        <div class="user-info">
+            <span id="username">Guest</span>
+            <div id="coin-display">
+                <i class="fas fa-coins"></i>
+                <span id="coins">0</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="sidebar">
+            <h2><i class="fas fa-book-open"></i> Lessons</h2>
+            <ul id="lesson-list">
+                <!-- Lessons will be populated here -->
+            </ul>
+        </div>
+        
+        <div class="content">
+            <div id="lesson-container">
+                <h2 id="lesson-title">Welcome to AI Learning Platform</h2>
+                <div id="lesson-content">
+                    <div class="welcome-message">
+                        <h2>Learn AI Concepts Interactively</h2>
+                        <p>Select a lesson from the sidebar to get started!</p>
+                        <p>This platform helps you learn AI concepts through interactive exercises. Complete tasks to earn coins and unlock more advanced lessons.</p>
+                    </div>
+                    <div class="welcome-features">
+                        <div class="feature">
+                            <i class="fas fa-code"></i>
+                            <h3>Write Code</h3>
+                            <p>Practice implementing AI algorithms with guided exercises</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Visualize Results</h3>
+                            <p>See your algorithms in action with dynamic visualizations</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-coins"></i>
+                            <h3>Earn Rewards</h3>
+                            <p>Collect coins by completing lessons to unlock more content</p>
+                        </div>
+                    </div>
+                    <div class="cta-container">
+                        <button id="start-first-lesson" class="cta-button">Start Your First Lesson</button>
+                    </div>
+                    <div id="recommendation-box" class="hidden"></div>
+                </div>
+            </div>
+            
+            <div id="code-container" class="hidden">
+                <h3><i class="fas fa-code"></i> Write your code:</h3>
+                <textarea id="code-editor" spellcheck="false"></textarea>
+                <div class="button-group">
+                    <button id="get-hint"><i class="far fa-lightbulb"></i> Get Hint</button>
+                    <button id="run-code"><i class="fas fa-play"></i> Run</button>
+                </div>
+            </div>
+            
+            <div id="visualization-container" class="hidden">
+                <h3><i class="fas fa-chart-network"></i> Visualization:</h3>
+                <canvas id="visualization-canvas" width="800" height="500"></canvas>
+                <div id="visualization-controls"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2023 AI Learning Platform</p>
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#" id="show-analytics-settings">Data Settings</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-javascript.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/lessons.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/code-editor.js"></script>
+    <script src="js/ui-components.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/welcome.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

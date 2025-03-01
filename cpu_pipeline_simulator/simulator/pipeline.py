@@ -1,5 +1,7 @@
 import os
 import sys
+from cpu_pipeline_simulator.simulator.processor import Processor
+from cpu_pipeline_simulator.simulator.instruction_set import InstructionSet
 
 class PipelineStage:
     def __init__(self, name):

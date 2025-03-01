@@ -103,6 +103,24 @@ python -m unittest discover tests
 - Add support for different types of hazards, such as structural hazards and control hazards.
 - Implement a more detailed performance analysis tool, including support for different types of performance metrics.
 
+## Advanced Branch Prediction Strategies
+
+The simulator now includes advanced branch prediction strategies such as:
+- Global history-based predictors
+- Tournament predictors
+- Machine learning-based predictors
+
+These strategies help improve the accuracy and efficiency of branch prediction, leading to better overall performance.
+
+## Out-of-Order Execution
+
+The simulator now supports out-of-order execution, which allows instructions to be executed as soon as their operands are ready, rather than strictly in program order. This feature includes:
+- Reservation stations
+- Reorder buffers
+- Register renaming
+
+Out-of-order execution helps improve the utilization of functional units and reduces the impact of instruction dependencies on performance.
+
 ## Git Repository
 
 You can find the source code for this project on GitHub:

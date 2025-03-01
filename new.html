@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergence Explorer</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="https://unpkg.com/lucide-react@latest"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen p-4">
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    
+    const EmergenceExplorer = () => {
+      const [activeSystem, setActiveSystem] = useState('gameOfLife');
+      const [isPaused, setIsPaused] = useState(false);
+      const [speed, setSpeed] = useState(100);
+      const [randomizeFactor, setRandomizeFactor] = useState(0.3);
+      const [cellSize, setCellSize] = useState(10);
+      const [showTrails, setShowTrails] = useState(false);
+      const [colorMode, setColorMode] = useState('standard');
+      const canvasRef = useRef(null);
+      const animationRef = useRef(null);
+      const gridRef = useRef(null);
+      const frameCountRef = useRef(0);
+      
+      // Canvas dimensions
+      const canvasWidth = 600;
+      const canvasHeight = 400;
+      
+      // System configurations
+      const systems = {
+        gameOfLife: {
+          name: 'Conway\'s Game of Life',
+          description: 'Cells live or die based on their neighbors. A classic example of emergent complexity.',
+          init: (grid, randomFactor) => {
+            const rows = Math.floor(canvasHeight / cellSize);
+            const cols = Math.floor(canvasWidth / cellSize);
+            const newGrid = Array(rows).fill().map(() => Array(cols).fill(0));
+            
+            for (let i = 0; i < rows; i++) {
+              for (let j = 0; j < cols; j++) {
+                newGrid[i][j] = Math.random() < randomFactor ? 1 : 0;
+              }
+            }
+            
+            return newGrid;
+          },
+          update: (grid) => {
+            const rows = grid.length;
+            const cols = grid[0].length;
+            const newGrid = Array(rows).fill().map(() => Array(cols).fill(0));
+            
+            for (let i = 0; i < rows; i++) {
+              for (let j = 0; j < cols; j++) {
+                const neighbors = countNeighbors(grid, i, j);
+                
+                if (grid[i][j] === 1) {
+                  // Cell is alive
+                  if (neighbors < 2 || neighbors > 3) {
+                    newGrid[i][j] = 0; // Dies
+                  } else {
+                    newGrid[i][j] = 1; // Survives
+                  }
+                } else {
+                  // Cell is dead
+                  if (neighbors === 3) {
+                    newGrid[i][j] = 1; // Becomes alive
+                  } else {
+                    newGrid[i][j] = 0; // Stays dead
+                  }
+                }
+              }
+            }
+            
+            return newGrid;
+          }
+        },
+        briansBrain: {
+          name: 'Brian\'s Brain',
+          description: 'A cellular automaton with three states: firing (on), refractory (dying), and off.',
+          init: (grid, randomFactor) => {
+            const rows = Math.floor(canvasHeight / cellSize);
+            const cols = Math.floor(canvasWidth / cellSize);
+            const newGrid = Array(rows).fill().map(() => Array(cols).fill(0));
+            
+            for (let i = 0; i < rows; i++) {
+              for (let j = 0; j < cols; j++) {
+                newGrid[i][j] = Math.random() < randomFactor ? 1 : 0;
+              }
+            }
+            
+            return newGrid;
+          },
+          update: (grid) => {
+            const rows = grid.length;
+            const cols = grid[0].length;
+            const newGrid = Array(rows).fill().map(() => Array(cols).fill(0));
+            
+            for (let i = 0; i < rows; i++) {
+              for (let j = 0; j < cols; j++) {
+                if (grid[i][j] === 1) {
+                  // Firing -> Refractory
+                  newGrid[i][j] = 2;
+                } else if (grid[i][j] === 2) {
+                  // Refractory -> Dead
+                  newGrid[i][j] = 0;
+                } else {
+                  // Dead -> Check if should fire
+                  const neighbors = countFiringNeighbors(grid, i, j);
+                  if (neighbors === 2) {
+                    newGrid[i][j] = 1; // Becomes firing
+                  } else {
+                    newGrid[i][j] = 0; // Stays dead
+                  }
+                }
+              }
+            }
+            
+            return newGrid;
+          }
+        },
+        diffusionLimited: {
+          name: 'Diffusion-Limited Aggregation',
+          description: 'Particles move randomly until they encounter and stick to a growing cluster.',
+          init: (grid, randomFactor) => {
+            const rows = Math.floor(canvasHeight / cellSize);
+            const cols = Math.floor(canvasWidth / cellSize);
+            const newGrid = Array(rows).fill().map(() => Array(cols).fill(0));
+            
+            // Seed in the center
+            const centerRow = Math.floor(rows / 2);
+            const centerCol = Math.floor(cols / 2);
+            newGrid[centerRow][centerCol] = 1;
+            
+            // Add random particles
+            const particleCount = Math.floor(rows * cols * randomFactor * 0.05);
+            for (let i = 0; i < particleCount; i++) {
+              const row = Math.floor(Math.random() * rows);
+              const col = Math.floor(Math.random() * cols);
+              if (newGrid[row][col] === 0) {
+                newGrid[row][col] = 2; // Particle
+              }
+            }
+            
+            return newGrid;
+          },
+          update: (grid) => {
+            const rows = grid.length;
+            const cols = grid[0].length;
+            const newGrid = JSON.parse(JSON.stringify(grid));
+            
+            // Move each particle
+            for (let i = 0; i < rows; i++) {
+              for (let j = 0; j < cols; j++) {
+                if (grid[i][j] === 2) { // Particle
+                  // Check if adjacent to cluster
+                  if (isAdjacentToCluster(grid, i, j)) {
+                    newGrid[i][j] = 1; // Join cluster
+                    continue;
+                  }
+                  
+                  // Remove from current position
+                  newGrid[i][j] = 0;
+                  
+                  // Random movement
+                  const direction = Math.floor(Math.random() * 4);
+                  let newRow = i, newCol = j;
+                  
+                  if (direction === 0) newRow = (i - 1 + rows) % rows; // Up
+                  else if (direction === 1) newRow = (i + 1) % rows; // Down
+                  else if (direction === 2) newCol = (j - 1 + cols) % cols; // Left
+                  else if (direction === 3) newCol = (j + 1) % cols; // Right
+                  
+                  // Place at new position if empty
+                  if (newGrid[newRow][newCol] === 0) {
+                    newGrid[newRow][newCol] = 2;
+                  } else {
+                    // If occupied, stay in place
+                    newGrid[i][j] = 2;
+                  }
+                }
+              }
+            }
+            
+            // Add new particles occasionally
+            if (Math.random() < 0.1) {
+              const edgeType = Math.floor(Math.random() * 4);
+              let row, col;
+              
+              if (edgeType === 0) { // Top edge
+                row = 0;
+                col = Math.floor(Math.random() * cols);
+              } else if (edgeType === 1) { // Bottom edge
+                row = rows - 1;
+                col = Math.floor(Math.random() * cols);
+              } else if (edgeType === 2) { // Left edge
+                row = Math.floor(Math.random() * rows);
+                col = 0;
+              } else { // Right edge
+                row = Math.floor(Math.random() * rows);
+                col = cols - 1;
+              }
+              
+              if (newGrid[row][col] === 0) {
+                newGrid[row][col] = 2;
+              }
+            }
+            
+            return newGrid;
+          }
+        },
+        reactionDiffusion: {
+          name: 'Reaction-Diffusion',
+          description: 'Chemical substances interact and diffuse, creating patterns like those seen in nature.',
+          init: (grid, randomFactor) => {
+            const rows = Math.floor(canvasHeight / cellSize);
+            const cols = Math.floor(canvasWidth / cellSize);
+            
+            // For reaction-diffusion, we need two chemicals A and B
+            // We'll represent this as an array of objects
+            const newGrid = Array(rows).fill().map(() => 
+              Array(cols).fill().map(() => ({
+                a: 1.0,
+                b: 0.0
+              }))
+            );
+            
+            // Seed with some chemical B in the center
+            const centerSize = Math.floor(Math.min(rows, cols) * 0.1);
+            const centerRow = Math.floor(rows / 2);
+            const centerCol = Math.floor(cols / 2);
+            
+            for (let i = centerRow - centerSize; i < centerRow + centerSize; i++) {
+              for (let j = centerCol - centerSize; j < centerCol + centerSize; j++) {
+                if (i >= 0 && i < rows && j >= 0 && j < cols) {
+                  const distance = Math.sqrt(
+                    Math.pow(i - centerRow, 2) + Math.pow(j - centerCol, 2)
+                  );
+                  if (distance < centerSize) {
+                    // Add some random variation to make it interesting
+                    newGrid[i][j].b = 1.0 * Math.random();
+                  }
+                }
+              }
+            }
+            
+            // Add some random B chemical spots
+            const spotCount = Math.floor(5 * randomFactor);
+            for (let s = 0; s < spotCount; s++) {
+              const spotRow = Math.floor(Math.random() * rows);
+              const spotCol = Math.floor(Math.random() * cols);
+              const spotSize = Math.floor(Math.random() * 5) + 3;
+              
+              for (let i = spotRow - spotSize; i < spotRow + spotSize; i++) {
+                for (let j = spotCol - spotSize; j < spotCol + spotSize; j++) {
+                  if (i >= 0 && i < rows && j >= 0 && j < cols) {
+                    const distance = Math.sqrt(
+                      Math.pow(i - spotRow, 2) + Math.pow(j - spotCol, 2)
+                    );
+                    if (distance < spotSize) {
+                      newGrid[i][j].b = 1.0 * Math.random();
+                    }
+                  }
+                }
+              }
+            }
+            
+            return newGrid;
+          },
+          update: (grid) => {
+            const rows = grid.length;
+            const cols = grid[0].length;
+            const newGrid = JSON.parse(JSON.stringify(grid));
+            
+            // Parameters for the Gray-Scott model
+            const dA = 1.0; // Diffusion rate for A
+            const dB = 0.5; // Diffusion rate for B
+            const f = 0.055; // Feed rate
+            const k = 0.062; // Kill rate
+            const dt = 1.0; // Time step
+            
+            for (let i = 1; i < rows - 1; i++) {
+              for (let j = 1; j < cols - 1; j++) {
+                const cell = grid[i][j];
+                
+                // Calculate the Laplacian using a 3x3 kernel
+                const laplaceA = calculateLaplacian(grid, i, j, 'a');
+                const laplaceB = calculateLaplacian(grid, i, j, 'b');
+                
+                // Reaction-diffusion equations
+                const a = cell.a;
+                const b = cell.b;
+                const reaction = a * b * b;
+                
+                newGrid[i][j].a = a + (dA * laplaceA - reaction + f * (1 - a)) * dt;
+                newGrid[i][j].b = b + (dB * laplaceB + reaction - (k + f) * b) * dt;
+                
+                // Clamp values to avoid instability
+                newGrid[i][j].a = Math.max(0, Math.min(1, newGrid[i][j].a));
+                newGrid[i][j].b = Math.max(0, Math.min(1, newGrid[i][j].b));
+              }
+            }
+            
+            return newGrid;
+          }
+        }
+      };
+      
+      // Helper functions
+      const countNeighbors = (grid, row, col) => {
+        const rows = grid.length;
+        const cols = grid[0].length;
+        let count = 0;
+        
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) continue;
+            
+            const newRow = (row + i + rows) % rows;
+            const newCol = (col + j + cols) % cols;
+            
+            if (grid[newRow][newCol] === 1) {
+              count++;
+            }
+          }
+        }
+        
+        return count;
+      };
+      
+      const countFiringNeighbors = (grid, row, col) => {
+        const rows = grid.length;
+        const cols = grid[0].length;
+        let count = 0;
+        
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) continue;
+            
+            const newRow = (row + i + rows) % rows;
+            const newCol = (col + j + cols) % cols;
+            
+            if (grid[newRow][newCol] === 1) {
+              count++;
+            }
+          }
+        }
+        
+        return count;
+      };
+      
+      const isAdjacentToCluster = (grid, row, col) => {
+        const rows = grid.length;
+        const cols = grid[0].length;
+        
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) continue;
+            
+            const newRow = (row + i + rows) % rows;
+            const newCol = (col + j + cols) % cols;
+            
+            if (grid[newRow][newCol] === 1) {
+              return true;
+            }
+          }
+        }
+        
+        return false;
+      };
+      
+      const calculateLaplacian = (grid, row, col, chemical) => {
+        // Center weight
+        let laplacian = -1 * grid[row][col][chemical];
+        
+        // Von Neumann neighborhood (North, South, East, West)
+        laplacian += 0.2 * grid[row-1][col][chemical]; // North
+        laplacian += 0.2 * grid[row+1][col][chemical]; // South
+        laplacian += 0.2 * grid[row][col-1][chemical]; // West
+        laplacian += 0.2 * grid[row][col+1][chemical]; // East
+        
+        // Diagonal neighbors
+        laplacian += 0.05 * grid[row-1][col-1][chemical]; // Northwest
+        laplacian += 0.05 * grid[row-1][col+1][chemical]; // Northeast
+        laplacian += 0.05 * grid[row+1][col-1][chemical]; // Southwest
+        laplacian += 0.05 * grid[row+1][col+1][chemical]; // Southeast
+        
+        return laplacian;
+      };
+      
+      // Initialize the grid
+      useEffect(() => {
+        const rows = Math.floor(canvasHeight / cellSize);
+        const cols = Math.floor(canvasWidth / cellSize);
+        let initialGrid;
+        
+        if (activeSystem === 'gameOfLife' || activeSystem === 'briansBrain') {
+          initialGrid = systems[activeSystem].init(null, randomizeFactor);
+        } else if (activeSystem === 'diffusionLimited') {
+          initialGrid = systems[activeSystem].init(null, randomizeFactor);
+        } else if (activeSystem === 'reactionDiffusion') {
+          initialGrid = systems[activeSystem].init(null, randomizeFactor);
+        }
+        
+        gridRef.current = initialGrid;
+        frameCountRef.current = 0;
+        drawGrid();
+      }, [activeSystem, cellSize, randomizeFactor]);
+      
+      // Main animation loop
+      useEffect(() => {
+        if (!isPaused) {
+          const animate = () => {
+            updateGrid();
+            drawGrid();
+            frameCountRef.current++;
+            animationRef.current = setTimeout(animate, speed);
+          };
+          
+          animationRef.current = setTimeout(animate, speed);
+        }
+        
+        return () => {
+          if (animationRef.current) {
+            clearTimeout(animationRef.current);
+          }
+        };
+      }, [isPaused, speed, showTrails, colorMode]);
+      
+      // Update the grid based on the system rules
+      const updateGrid = () => {
+        if (!gridRef.current) return;
+        gridRef.current = systems[activeSystem].update(gridRef.current);
+      };
+      
+      // Draw the grid on the canvas
+      const drawGrid = () => {
+        const canvas = canvasRef.current;
+        if (!canvas || !gridRef.current) return;
+        
+        const ctx = canvas.getContext('2d');
+        const rows = gridRef.current.length;
+        const cols = rows > 0 ? gridRef.current[0].length : 0;
+        
+        // Optionally clear the canvas for each frame
+        if (!showTrails) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+          // For trails, add a slight fade
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Draw each cell
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            const cell = gridRef.current[i][j];
+            
+            if (activeSystem === 'gameOfLife') {
+              if (cell === 1) {
+                ctx.fillStyle = getColorForCell(1, i, j);
+                ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+              }
+            } else if (activeSystem === 'briansBrain') {
+              if (cell > 0) {
+                ctx.fillStyle = cell === 1 ? getColorForCell(1, i, j) : getColorForCell(2, i, j);
+                ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+              }
+            } else if (activeSystem === 'diffusionLimited') {
+              if (cell === 1) { // Cluster
+                ctx.fillStyle = getColorForCell(1, i, j);
+                ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+              } else if (cell === 2) { // Particle
+                ctx.fillStyle = getColorForCell(2, i, j);
+                ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+              }
+            } else if (activeSystem === 'reactionDiffusion') {
+              // Reaction-diffusion uses a continuous value
+              const value = 1 - cell.b; // Invert B chemical for better visualization
+              
+              if (colorMode === 'grayscale') {
+                const intensity = Math.floor(value * 255);
+                ctx.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
+              } else if (colorMode === 'heatmap') {
+                // Use a heat map coloring (red to yellow to white)
+                const r = Math.floor(255 * Math.min(1, 2 * (1 - value)));
+                const g = Math.floor(255 * Math.min(1, 2 * value));
+                const b = Math.floor(255 * Math.max(0, 2 * (value - 0.5)));
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+              } else {
+                // Default coloring: blue to white
+                const intensity = Math.floor(value * 255);
+                ctx.fillStyle = `rgb(${intensity}, ${intensity}, 255)`;
+              }
+              
+              ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+      };
+      
+      // Get appropriate color based on state and color mode
+      const getColorForCell = (state, row, col) => {
+        if (colorMode === 'standard') {
+          if (activeSystem === 'gameOfLife') {
+            return 'rgba(50, 120, 255, 0.8)';
+          } else if (activeSystem === 'briansBrain') {
+            return state === 1 ? 'rgba(255, 255, 255, 0.9)' : 'rgba(100, 100, 255, 0.7)';
+          } else if (activeSystem === 'diffusionLimited') {
+            return state === 1 ? 'rgba(150, 150, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)';
+          }
+        } else if (colorMode === 'rainbow') {
+          // Use frame count to cycle through rainbow colors
+          const hue = (frameCountRef.current + row * 3 + col * 5) % 360;
+          return `hsl(${hue}, 100%, 60%)`;
+        } else if (colorMode === 'grayscale') {
+          // For grayscale, use position-based intensity
+          const intensity = ((row + col) * 10) % 200 + 55;
+          return `rgb(${intensity}, ${intensity}, ${intensity})`;
+        } else if (colorMode === 'heatmap') {
+          // For heatmap, base it on position and state
+          const value = (row * col) % 100 / 100;
+          const r = Math.floor(255 * (state === 1 ? 1 : 0.5));
+          const g = Math.floor(255 * value * (state === 2 ? 0.8 : 0.5));
+          const b = Math.floor(255 * (1 - value) * (state === 1 ? 0.5 : 1));
+          return `rgb(${r}, ${g}, ${b})`;
+        }
+        
+        // Default color
+        return 'white';
+      };
+      
+      // Handle randomize button
+      const handleRandomize = () => {
+        let newGrid;
+        
+        if (activeSystem === 'gameOfLife' || activeSystem === 'briansBrain') {
+          newGrid = systems[activeSystem].init(null, randomizeFactor);
+        } else if (activeSystem === 'diffusionLimited') {
+          newGrid = systems[activeSystem].init(null, randomizeFactor);
+        } else if (activeSystem === 'reactionDiffusion') {
+          newGrid = systems[activeSystem].init(null, randomizeFactor);
+        }
+        
+        gridRef.current = newGrid;
+        frameCountRef.current = 0;
+        drawGrid();
+      };
+
+      // Handle play/pause button
+      const handlePlayPause = () => {
+        setIsPaused(!isPaused);
+      };
+
+      // Handle clear button
+      const handleClear = () => {
+        const rows = Math.floor(canvasHeight / cellSize);
+        const cols = Math.floor(canvasWidth / cellSize);
+        
+        if (activeSystem === 'reactionDiffusion') {
+          gridRef.current = Array(rows).fill().map(() => 
+            Array(cols).fill().map(() => ({ a: 1.0, b: 0.0 }))
+          );
+        } else {
+          gridRef.current = Array(rows).fill().map(() => Array(cols).fill(0));
+        }
+        
+        frameCountRef.current = 0;
+        drawGrid();
+      };
+      
+      return (
+        <div className="flex flex-col items-center p-4 max-w-4xl mx-auto bg-gray-100 rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold mb-2 text-indigo-700">Emergence Explorer</h1>
+          <p className="text-gray-700 mb-4">Witness complexity emerging from simple rules</p>
+          
+          <div className="flex flex-wrap gap-2 mb-4">
+            {Object.keys(systems).map(systemKey => (
+              <button
+                key={systemKey}
+                className={`px-3 py-1 rounded transition-colors ${
+                  activeSystem === systemKey 
+                    ? 'bg-indigo-600 text-white' 
+                    : 'bg-gray-300 hover:bg-gray-400 text-gray-800'
+                }`}
+                onClick={() => setActiveSystem(systemKey)}
+              >
+                {systems[systemKey].name}
+              </button>
+            ))}
+          </div>
+          
+          <p className="text-sm text-gray-600 mb-2 italic">{systems[activeSystem].description}</p>
+          
+          <div className="relative mb-4 border-4 border-indigo-200 rounded">
+            <canvas 
+              ref={canvasRef}
+              width={canvasWidth}
+              height={canvasHeight}
+              className="bg-black"
+            ></canvas>
+          </div>
+          
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">Speed:</span>
+                <span className="text-xs text-gray-500">{speed}ms</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="500"
+                value={speed}
+                onChange={(e) => setSpeed(parseInt(e.target.value))}
+                className="w-full"
+              />
+              
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-sm font-medium text-gray-700">Randomize Factor:</span>
+                <span className="text-xs text-gray-500">{randomizeFactor.toFixed(2)}</span>
+              </div>
+              <input
+                type="range"
+                min="0.05"
+                max="0.95"
+                step="0.05"
+                value={randomizeFactor}
+                onChange={(e) => setRandomizeFactor(parseFloat(e.target.value))}
+                className="w-full"
+              />
+              
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-sm font-medium text-gray-700">Cell Size:</span>
+                <span className="text-xs text-gray-500">{cellSize}px</span>
+              </div>
+              <input
+                type="range"
+                min="2"
+                max="20"
+                value={cellSize}
+                onChange={(e) => setCellSize(parseInt(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            
+            <div className="flex flex-col space-y-2">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={handlePlayPause}
+                  className={`px-3 py-1 rounded ${isPaused ? 'bg-green-500' : 'bg-red-500'} text-white`}
+                >
+                  {isPaused ? 'Play' : 'Pause'}
+                </button>
+                <button
+                  onClick={handleRandomize}
+                  className="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  Randomize
+                </button>
+                <button
+                  onClick={handleClear}
+                  className="px-3 py-1 rounded bg-gray-500 hover:bg-gray-600 text-white"
+                >
+                  Clear
+                </button>
+              </div>
+              
+              <div className="mt-2">
+                <span className="text-sm font-medium text-gray-700 block mb-1">Display Options:</span>
+                <div className="flex flex-wrap gap-2">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={showTrails}
+                      onChange={() => setShowTrails(!showTrails)}
+                      className="form-checkbox h-4 w-4 text-indigo-600"
+                    />
+                    <span className="ml-1 text-sm text-gray-700">Show Trails</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div className="mt-2">
+                <span className="text-sm font-medium text-gray-700 block mb-1">Color Mode:</span>
+                <div className="flex flex-wrap gap-2">
+                  {['standard', 'rainbow', 'grayscale', 'heatmap'].map(mode => (
+                    <label key={mode} className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="colorMode"
+                        value={mode}
+                        checked={colorMode === mode}
+                        onChange={() => setColorMode(mode)}
+                        className="form-radio h-4 w-4 text-indigo-600"
+                      />
+                      <span className="ml-1 text-sm text-gray-700">{mode.charAt(0).toUpperCase() + mode.slice(1)}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+    
+    ReactDOM.render(<EmergenceExplorer />, document.getElementById('root'));
+  </script>
+</body>
+</html>

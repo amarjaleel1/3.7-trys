@@ -1,0 +1,203 @@
+/* Theme styles and dark mode support */
+
+/* Base theme variables are defined in main.css */
+
+/* Theme toggle button */
+.theme-toggle {
+    background: none;
+    border: none;
+    color: var(--light-text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition);
+    margin-left: 10px;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+    /* These will be applied via JavaScript */
+}
+
+[data-theme="dark"] body {
+    background-color: var(--light-bg);
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .content {
+    background-color: var(--dark-bg);
+}
+
+[data-theme="dark"] #lesson-container,
+[data-theme="dark"] #code-container,
+[data-theme="dark"] #visualization-container {
+    background-color: var(--darker-bg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] #lesson-title,
+[data-theme="dark"] #code-container h3,
+[data-theme="dark"] #visualization-container h3 {
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .feature {
+    background-color: var(--dark-bg);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .feature h3 {
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .feature p {
+    color: #aaa;
+}
+
+[data-theme="dark"] .notification {
+    background-color: var(--darker-bg);
+    color: var(--light-text);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--dark-bg);
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom-color: #444;
+}
+
+[data-theme="dark"] .modal-header h3 {
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .close-button {
+    color: #aaa;
+}
+
+[data-theme="dark"] .close-button:hover {
+    color: var(--warning);
+}
+
+[data-theme="dark"] .hint-content {
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .profile-section {
+    border-bottom-color: #444;
+}
+
+[data-theme="dark"] .small-button {
+    background-color: #444;
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .small-button:hover {
+    background-color: #555;
+}
+
+[data-theme="dark"] .stat-item {
+    background-color: var(--darker-bg);
+}
+
+[data-theme="dark"] .stat-label {
+    color: #aaa;
+}
+
+[data-theme="dark"] .achievement-item {
+    background-color: var(--darker-bg);
+}
+
+[data-theme="dark"] .achievement-info h5 {
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .achievement-info p {
+    color: #aaa;
+}
+
+[data-theme="dark"] .edit-form input {
+    background-color: var(--darker-bg);
+    color: var(--light-text);
+    border-color: #444;
+}
+
+[data-theme="dark"] .edit-form input:focus {
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .secondary-button {
+    background-color: #444;
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .secondary-button:hover {
+    background-color: #555;
+}
+
+[data-theme="dark"] .progress-container {
+    background-color: #444;
+}
+
+[data-theme="dark"] .tutorial-tooltip {
+    background-color: var(--dark-bg);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .tooltip-header {
+    border-bottom-color: #444;
+}
+
+[data-theme="dark"] .tooltip-header h4 {
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .tooltip-content p {
+    color: #ccc;
+}
+
+[data-theme="dark"] .tooltip-actions button {
+    background-color: #444;
+    color: #ccc;
+}
+
+[data-theme="dark"] .tooltip-actions button:hover {
+    background-color: #555;
+}
+
+[data-theme="dark"] .tooltip-actions .next-step,
+[data-theme="dark"] .tooltip-actions .finish-tutorial {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+}
+
+[data-theme="dark"] .tooltip-actions .next-step:hover,
+[data-theme="dark"] .tooltip-actions .finish-tutorial:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Theme transition */
+body,
+button,
+input,
+textarea,
+.content,
+.sidebar,
+.notification,
+.modal-content,
+.feature,
+.achievement-item,
+.stat-item {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

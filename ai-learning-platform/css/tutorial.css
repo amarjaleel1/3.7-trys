@@ -1,0 +1,140 @@
+/* Tutorial styles */
+
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9000;
+    pointer-events: none;
+}
+
+.tutorial-highlight {
+    position: relative;
+    z-index: 9001;
+    box-shadow: 0 0 0 4px var(--primary-color), 0 0 0 10000px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    animation: pulse-highlight 2s infinite;
+}
+
+@keyframes pulse-highlight {
+    0% {
+        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.7), 0 0 0 10000px rgba(0, 0, 0, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(52, 152, 219, 0.5), 0 0 0 10000px rgba(0, 0, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.7), 0 0 0 10000px rgba(0, 0, 0, 0.5);
+    }
+}
+
+.tutorial-tooltip {
+    position: fixed;
+    z-index: 9002;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    width: 300px;
+    padding: 0;
+    pointer-events: auto;
+}
+
+.tutorial-tooltip:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+}
+
+.tutorial-tooltip.top:after {
+    border-top-color: white;
+    top: 100%;
+    left: 50%;
+    margin-left: -10px;
+}
+
+.tutorial-tooltip.bottom:after {
+    border-bottom-color: white;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -10px;
+}
+
+.tutorial-tooltip.left:after {
+    border-left-color: white;
+    left: 100%;
+    top: 50%;
+    margin-top: -10px;
+}
+
+.tutorial-tooltip.right:after {
+    border-right-color: white;
+    right: 100%;
+    top: 50%;
+    margin-top: -10px;
+}
+
+.tooltip-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tooltip-header h4 {
+    margin: 0;
+    color: var(--dark-text);
+    font-size: 16px;
+}
+
+.step-counter {
+    color: #999;
+    font-size: 14px;
+}
+
+.tooltip-content {
+    padding: 15px 20px;
+}
+
+.tooltip-content p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #666;
+}
+
+.tooltip-actions {
+    padding: 10px 20px 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.tooltip-actions button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #f1f1f1;
+    color: var(--dark-text);
+}
+
+.tooltip-actions button:hover {
+    background: #e1e1e1;
+}
+
+.next-step, .finish-tutorial {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
+.next-step:hover, .finish-tutorial:hover {
+    background: var(--primary-dark) !important;
+}

@@ -1,0 +1,312 @@
+/* Profile styles */
+
+/* Profile button */
+.profile-button {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: var(--transition);
+    margin-left: 10px;
+}
+
+.profile-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Profile modal specific styling */
+.profile-content {
+    max-width: 600px;
+}
+
+.profile-body {
+    padding: 20px;
+}
+
+.profile-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.profile-section h4 {
+    margin: 0 0 15px 0;
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+/* Username display */
+.username-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.user-details {
+    flex-grow: 1;
+}
+
+.user-details h4 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: var(--dark-text);
+}
+
+/* Small buttons */
+.small-button {
+    font-size: 12px;
+    padding: 4px 8px;
+    background-color: #f1f1f1;
+    color: var(--dark-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.small-button:hover {
+    background-color: #e1e1e1;
+}
+
+.small-button i {
+    font-size: 10px;
+}
+
+/* Stats grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.stat-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Achievements list */
+.achievements-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.achievement-item {
+    display: flex;
+    gap: 15px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.achievement-item:hover {
+    transform: translateX(5px);
+}
+
+.achievement-item .achievement-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    flex-shrink: 0;
+}
+
+.achievement-info {
+    flex-grow: 1;
+}
+
+.achievement-info h5 {
+    margin: 0 0 5px 0;
+    font-size: 15px;
+    color: var(--dark-text);
+}
+
+.achievement-info p {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.date-earned {
+    font-size: 11px;
+    color: #999;
+}
+
+.no-achievements {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* Profile actions */
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.danger-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.danger-button:hover {
+    background-color: #c0392b;
+}
+
+/* Edit username form */
+.small-modal {
+    max-width: 400px;
+}
+
+.edit-form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--dark-text);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Confirmation modal */
+.confirm-modal .modal-content {
+    max-width: 400px;
+}
+
+.confirm-content {
+    padding: 20px;
+}
+
+.warning-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--warning);
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.warning-text i {
+    font-size: 18px;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.secondary-button {
+    background-color: #f1f1f1;
+    color: var(--dark-text);
+}
+
+.secondary-button:hover {
+    background-color: #e1e1e1;
+}
+
+/* Progress stats */
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+}
+
+#progress-percent {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.lessons-count {
+    color: #999;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .achievements-list {
+        max-height: 250px;
+    }
+}

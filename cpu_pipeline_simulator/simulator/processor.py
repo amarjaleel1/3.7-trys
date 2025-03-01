@@ -1,3 +1,5 @@
+import os
+
 class Processor:
     def __init__(self):
         # Initialize registers (R0-R31)

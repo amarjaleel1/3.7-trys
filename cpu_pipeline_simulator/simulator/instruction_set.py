@@ -1,3 +1,5 @@
+import os
+
 class InstructionSet:
     def __init__(self):
         self.instructions = {
@@ -99,3 +101,11 @@ class InstructionSet:
             
         source_regs = self.get_source_registers(instr2)
         return dest_reg in source_regs
+    
+    def load_program(self, program_file):
+        """Load a program from a file"""
+        if not os.path.isfile(program_file):
+            raise FileNotFoundError(f"Program file '{program_file}' not found.")
+        
+        with open(program_file, 'r') as f:
+            self.program = [line.strip() for line in f if line.strip() and not line.startswith('#')]
