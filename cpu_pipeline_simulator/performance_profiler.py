@@ -12,9 +12,9 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.append(current_dir)
 
-from simulator.pipeline import Pipeline
-from simulator.processor import Processor
-from simulator.instruction_set import InstructionSet
+from cpu_pipeline_simulator.simulator.pipeline import Pipeline
+from cpu_pipeline_simulator.simulator.processor import Processor
+from cpu_pipeline_simulator.simulator.instruction_set import InstructionSet
 
 class PipelineProfiler:
     """
@@ -316,6 +316,8 @@ def profile_pipeline(program_file=None, report_format='text', report_output=None
     
     # Run simulation
     if program_file:
+        if not os.path.isfile(program_file):
+            raise FileNotFoundError(f"Program file '{program_file}' not found.")
         pipeline.load_program(program_file)
     else:
         pipeline.load_test_program()
@@ -324,4 +326,22 @@ def profile_pipeline(program_file=None, report_format='text', report_output=None
     pipeline.show_stats()
     
     # Generate report
-    report
+    report = profiler.generate_report(report_format)
+    
+    # Output report
+    if report_output:
+        with open(report_output, 'w') as f:
+            f.write(report)
+        print(f"Report saved to {report_output}")
+    else:
+        print(report)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="CPU Pipeline Simulator - Performance Profiler")
+    parser.add_argument("program", nargs="?", help="Program file to simulate")
+    parser.add_argument("-f", "--format", choices=["text", "html", "json"], default="text", help="Report format")
+    parser.add_argument("-o", "--output", help="Output file for the report")
+    
+    args = parser.parse_args()
+    
+    profile_pipeline(args.program, args.format, args.output)

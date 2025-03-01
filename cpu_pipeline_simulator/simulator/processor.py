@@ -1,3 +1,5 @@
+import os
+
 class Processor:
     def __init__(self):
         # Initialize registers (R0-R31)
@@ -63,3 +65,11 @@ class Processor:
             return operand1 ^ operand2
         else:
             raise ValueError(f"Unsupported ALU operation: {operation}")
+    
+    def load_program(self, program_file):
+        """Load a program from a file"""
+        if not os.path.isfile(program_file):
+            raise FileNotFoundError(f"Program file '{program_file}' not found.")
+        
+        with open(program_file, 'r') as f:
+            self.program = [line.strip() for line in f if line.strip() and not line.startswith('#')]

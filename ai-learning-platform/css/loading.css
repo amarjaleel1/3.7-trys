@@ -1,0 +1,124 @@
+/* Loading screen styles */
+
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--dark-bg);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s;
+}
+
+.loading-screen.fade-out {
+    opacity: 0;
+}
+
+.loader-content {
+    text-align: center;
+}
+
+.loader-spinner {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s infinite linear;
+}
+
+.loader-content p {
+    color: var(--light-text);
+    font-size: 18px;
+    letter-spacing: 0.5px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* System notification */
+.system-notification {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    z-index: 9000;
+    transition: bottom 0.4s ease;
+}
+
+.system-notification.show {
+    bottom: 20px;
+}
+
+.system-notification h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.system-notification p {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--dark-text);
+}
+
+.close-notification {
+    background: #f1f1f1;
+    color: var(--dark-text);
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    float: right;
+    transition: background-color 0.2s;
+}
+
+.close-notification:hover {
+    background: #e1e1e1;
+}
+
+/* Dark theme support */
+body[data-theme="dark"] .system-notification {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+}
+
+body[data-theme="dark"] .system-notification h3 {
+    color: #3498db;
+}
+
+body[data-theme="dark"] .system-notification p {
+    color: #ecf0f1;
+}
+
+body[data-theme="dark"] .close-notification {
+    background: #34495e;
+    color: #ecf0f1;
+}
+
+body[data-theme="dark"] .close-notification:hover {
+    background: #2c3e50;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .system-notification {
+        width: 95%;
+    }
+}

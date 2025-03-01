@@ -6,9 +6,9 @@ import tempfile
 # Add the project directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from simulator.processor import Processor
-from simulator.instruction_set import InstructionSet
-from simulator.pipeline import Pipeline, PipelineStage
+from cpu_pipeline_simulator.simulator.processor import Processor
+from cpu_pipeline_simulator.simulator.instruction_set import InstructionSet
+from cpu_pipeline_simulator.simulator.pipeline import Pipeline, PipelineStage
 
 class TestPipelineStage(unittest.TestCase):
     def test_init(self):
@@ -173,4 +173,36 @@ class TestPipeline(unittest.TestCase):
         self.assertIn('decode', self.pipeline.stages)
         self.assertIn('execute', self.pipeline.stages)
         self.assertIn('memory', self.pipeline.stages)
-        self.assertIn('writeback
+        self.assertIn('writeback', self.pipeline.stages)
+    
+    def test_load_program(self):
+        """Test loading a program from a file"""
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file.write(b"ADD R1, R0, 10\nADD R2, R0, 5\n")
+            temp_file.close()
+            self.pipeline.load_program(temp_file.name)
+            os.remove(temp_file.name)
+        
+        self.assertEqual(len(self.pipeline.program), 2)
+        self.assertEqual(self.pipeline.program[0], "ADD R1, R0, 10")
+        self.assertEqual(self.pipeline.program[1], "ADD R2, R0, 5")
+    
+    def test_load_program_file_not_found(self):
+        """Test loading a program from a non-existent file"""
+        with self.assertRaises(FileNotFoundError):
+            self.pipeline.load_program("non_existent_file.txt")
+    
+    def test_run(self):
+        """Test running the pipeline"""
+        self.pipeline.load_test_program()
+        self.pipeline.run()
+        self.assertEqual(self.pipeline.cycles, 5)
+        self.assertEqual(self.pipeline.stalls, 0)
+        self.assertEqual(self.pipeline.pc, 5)
+    
+    def test_check_hazards(self):
+        """Test hazard detection"""
+        self.assertFalse(self.pipeline.check_hazards())
+
+if __name__ == '__main__':
+    unittest.main()

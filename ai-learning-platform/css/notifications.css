@@ -1,0 +1,350 @@
+/* Notifications and UI components */
+
+/* Notification container */
+#notification-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 300px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Individual notification */
+.notification {
+    padding: 12px 20px;
+    border-radius: 5px;
+    background-color: white;
+    color: var(--dark-text);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    font-size: 14px;
+}
+
+.notification.visible {
+    transform: translateX(0);
+}
+
+.notification i {
+    font-size: 18px;
+}
+
+/* Notification types */
+.notification.info {
+    border-left: 4px solid var(--info);
+}
+
+.notification.info i {
+    color: var(--info);
+}
+
+.notification.success {
+    border-left: 4px solid var(--success);
+}
+
+.notification.success i {
+    color: var(--success);
+}
+
+.notification.warning {
+    border-left: 4px solid var(--warning);
+}
+
+.notification.warning i {
+    color: var(--warning);
+}
+
+.notification.error {
+    border-left: 4px solid var(--warning);
+}
+
+.notification.error i {
+    color: var(--warning);
+}
+
+/* Modal styling */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--dark-text);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: var(--warning);
+}
+
+/* Hint modal */
+.hint-content {
+    padding: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--dark-text);
+}
+
+/* Login reward modal */
+.login-reward {
+    padding: 30px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.reward-icon {
+    font-size: 40px;
+    color: var(--secondary-color);
+}
+
+.reward-details {
+    flex-grow: 1;
+}
+
+.reward-details p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.streak {
+    font-weight: 600;
+    color: #e67e22;
+}
+
+.modal .primary-button {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 0 20px 20px;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: center;
+}
+
+.modal .primary-button:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Achievement toast */
+.achievement-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150%);
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.achievement-toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.achievement-icon {
+    background: rgba(255, 255, 255, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: white;
+}
+
+.achievement-details {
+    flex-grow: 1;
+    color: white;
+}
+
+.achievement-details h4 {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.achievement-details h3 {
+    margin: 5px 0;
+    font-size: 18px;
+}
+
+.achievement-details p {
+    margin: 5px 0;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.achievement-details .reward {
+    font-weight: 600;
+    color: var(--secondary-color);
+    opacity: 1;
+}
+
+/* Recommendation box */
+#recommendation-box {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 8px;
+    background: linear-gradient(to right, #56CCF2, #2F80ED);
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#recommendation-box h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: white;
+}
+
+.recommendation {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.recommendation-icon {
+    font-size: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.recommendation-details h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.recommendation-details p {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+}
+
+.recommendation-details button {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.recommendation-details button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Progress bar */
+.progress-container {
+    margin: 20px 0;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--success) 100%);
+    width: 0;
+    transition: width 0.6s ease;
+}
+
+/* Coin shortage animation */
+.coin-shortage {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+    20%, 80% {
+        transform: translate3d(2px, 0, 0);
+    }
+    30%, 50%, 70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+    40%, 60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
